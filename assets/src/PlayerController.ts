@@ -51,6 +51,14 @@ export class PlayerController extends Component {
             this.score += 1
             this.scoreLabel.string = `Score: ${this.score}`
         }
+
+
+        if (otherCollider.name == "wall_left<BoxCollider2D>" ||
+            otherCollider.name == "wall_top<BoxCollider2D>" ||
+            otherCollider.name == "wall_right<BoxCollider2D>" ||
+            otherCollider.name == "wall_bottom<BoxCollider2D>") {
+            console.log('Столкновение со стеной!')
+        }
     }
 
     keyDown(event: EventKeyBoard) {
