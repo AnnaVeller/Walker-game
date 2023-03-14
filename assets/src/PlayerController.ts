@@ -1,4 +1,8 @@
-import {_decorator, Component, Node, systemEvent, SystemEvent, EventKeyBoard, macro, RigidBody2D} from 'cc';
+import {
+    _decorator, Component, Node, systemEvent, SystemEvent, EventKeyBoard, macro,
+    Collider, RigidBody2D, BoxCollider2D, Contact2DType, IPhysics2DContact,
+    UIOpacity, Vec3, Label
+} from 'cc';
 
 const {ccclass, property} = _decorator;
 
@@ -13,7 +17,16 @@ export class PlayerController extends Component {
     @property({type: RigidBody2D})
     rigidBody: RigidBody2D = null;
 
-    timeCounter = 0;
+    @property({type: BoxCollider2D})
+    collider: BoxCollider2D = null;
+
+    @property({type: Label})
+    scoreLabel: Label = null;
+
+    // @property({type: RigidBody2D})
+    // apple: RigidBody2D = null;
+
+    private score: number = 0;
 
     onLoad() {
         systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.keyDown, this)
@@ -21,7 +34,22 @@ export class PlayerController extends Component {
     }
 
     start() {
+        // можно вот так найти колайдер
+        // this.collider = this.node.getComponent(BoxCollider2D);
 
+        if (this.collider) {
+            this.collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
+    }
+
+    onBeginContact(selfCollider: BoxCollider2D, otherCollider: BoxCollider2D, contact: IPhysics2DContact | null) {
+        if (otherCollider.name == "apple<BoxCollider2D>") {
+            const apple = otherCollider.node.getComponent("Apple")
+            apple.catch()
+
+            this.score += 1
+            this.scoreLabel.string = `Score: ${this.score}`
+        }
     }
 
     keyDown(event: EventKeyBoard) {
@@ -59,35 +87,6 @@ export class PlayerController extends Component {
     }
 
     update(deltaTime: number) {
-        // const dt = 0.5 // sec
-        //
-        // this.timeCounter += deltaTime
-        //
-        // if (this.timeCounter < dt) return
-        //
-        // this.timeCounter -= dt
-        //
-        // const nowX = this.rigidBody.node.position.x
-        // const nowY = this.rigidBody.node.position.y
-        // let newX = nowX
-        // let newY = nowY
-        //
-        // if (this.direction === 1) {
-        //     newX = nowX - this.speed
-        // }
-        // if (this.direction === 2) {
-        //     newY = nowY + this.speed
-        // }
-        // if (this.direction === 3) {
-        //     newX = nowX + this.speed
-        // }
-        // if (this.direction === 4) {
-        //     newY = nowY - this.speed
-        // }
-        //
-        // console.log(nowX, nowY, this.speed, newX, newY)
-        // this.rigidBody.node.setPosition(newX, newY)
-
         let velocityX = 0
         let velocityY = 0
         if (this.direction === 1) {
@@ -104,8 +103,6 @@ export class PlayerController extends Component {
         }
 
         this.rigidBody.linearVelocity = {x: velocityX, y: velocityY}
-
-        // console.log(this.rigidBody.linearVelocity, velocityY, velocityX)
     }
 }
 
