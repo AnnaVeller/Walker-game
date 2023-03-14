@@ -13,6 +13,7 @@ export class PlayerController extends Component {
     @property
     speed = 10;
     direction = 0; // 1 - left; 2 - top; 3 - right; 4 - bottom
+    newDirection = 0; // 1 - left; 2 - top; 3 - right; 4 - bottom
 
     @property({type: RigidBody2D})
     rigidBody: RigidBody2D = null;
@@ -55,16 +56,16 @@ export class PlayerController extends Component {
     keyDown(event: EventKeyBoard) {
         switch (event.keyCode) {
             case 37:
-                this.direction = 1 // left
+                this.newDirection = 1 // left
                 break
             case 38:
-                this.direction = 2 // up
+                this.newDirection = 2 // up
                 break
             case 39:
-                this.direction = 3 // right
+                this.newDirection = 3 // right
                 break
             case 40:
-                this.direction = 4 // down
+                this.newDirection = 4 // down
                 break
         }
     }
@@ -87,6 +88,32 @@ export class PlayerController extends Component {
     }
 
     update(deltaTime: number) {
+        if (this.newDirection === this.direction) return
+
+        const x = this.rigidBody.node.position.x
+        const y = this.rigidBody.node.position.y
+
+        if (this.isCenterCell(x, y)) {
+            this.alignSnake(x, y)
+            this.changeVelocity()
+        }
+
+    }
+
+    isCenterCell(x, y, epsilon = 5) {
+        const xCords = [-350, -250, -150, -50, 50, 150, 250, 350]
+        const yCords = [250, 150, 50, -50, -150, -250]
+        const minDistX = this.getMinDiff(xCords, x)[0]
+        const minDistY = this.getMinDiff(yCords, y)[0]
+
+        // console.log(x, y, Math.round(minDistX * 100) / 100, Math.round(minDistY * 100) / 100)
+
+        return minDistX < epsilon && minDistY < epsilon
+    }
+
+    changeVelocity() {
+        this.direction = this.newDirection
+
         let velocityX = 0
         let velocityY = 0
         if (this.direction === 1) {
@@ -103,6 +130,33 @@ export class PlayerController extends Component {
         }
 
         this.rigidBody.linearVelocity = {x: velocityX, y: velocityY}
+    }
+
+    // выравнивание змеи
+    alignSnake(x, y) {
+        const xCords = [-350, -250, -150, -50, 50, 150, 250, 350]
+        const yCords = [250, 150, 50, -50, -150, -250]
+
+        const minX = this.getMinDiff(xCords, x)[1]
+        const minY = this.getMinDiff(yCords, y)[1]
+
+        this.rigidBody.node.setPosition(minX, minY)
+    }
+
+    // возвращает минимальную разницу и само минимальное значение массива
+    getMinDiff(array, value) {
+        let minDiff = 1000
+        let minValue
+
+        for (let i = 0; i < array.length; i++) {
+            const delta = Math.abs(array[i] - value)
+            if (delta < minDiff) {
+                minDiff = delta
+                minValue = array[i]
+            }
+        }
+
+        return [minDiff, minValue]
     }
 }
 
