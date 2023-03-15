@@ -1,9 +1,14 @@
-##Посмотреть билд тут
+# Walker-game
+В разработке...
+
+### Посмотреть билд тут
 
 https://annaveller.github.io/Walker-game/
 
+### Управление
 
-##Развернуть проект на github.io
+Стрелочками или свайпами
 
-gulp deploy
+### Развернуть проект на github.io
 
+`gulp deploy`

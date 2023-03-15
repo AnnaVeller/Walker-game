@@ -1,11 +1,12 @@
-import {_decorator, Component, Node, UIOpacity, CCInteger} from 'cc';
+import {_decorator, Component, Node, UIOpacity, CCInteger} from "cc"
 
-const {ccclass, property} = _decorator;
+const {ccclass, property} = _decorator
 
-const SIZE = 100;
-const LEFT_TOP_CORNER = {x: -350, y: 250};
+const SIZE = 100
+const LEFT_TOP_CORNER = {x: -350, y: 250}
 
-@ccclass('Apple')
+
+@ccclass("Apple")
 export class Apple extends Component {
 
     @property({type: CCInteger})
